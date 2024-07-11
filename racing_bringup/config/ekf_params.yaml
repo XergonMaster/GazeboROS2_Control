@@ -1,0 +1,64 @@
+ekf_filter_node:
+  ros__parameters:
+    frequency: 50.0
+    sensor_timeout: 0.1
+    two_d_mode: true
+    transform_time_offset: 0.0
+    transform_timeout: 0.0
+    print_diagnostics: true
+    debug: false
+    debug_out_file: /tmp/ekf_debug.txt
+    publish_tf: true
+    map_frame: map
+    odom_frame: odom
+    base_link_frame: base_link_imu
+    world_frame: odom
+    odom0: /odom
+    odom0_config: [
+        true, # x
+        true, # y
+        false, # z
+        false, # roll
+        false, # pitch
+        true, # yaw
+        true, # vx
+        false, # vy
+        false, # vz
+        false, # vroll
+        false, # vpitch
+        true, # vyaw
+        false, # ax
+        false, # ay
+        false, # az
+      ]
+    odom0_queue_size: 10
+    odom0_nodelay: false
+    odom0_differential: false
+    odom0_relative: false
+    imu0: /imu/data_raw
+    imu0_config: [
+        false, # x
+        false, # y
+        false, # z
+        false, # roll
+        false, # pitch
+        false, # yaw
+        false, # vx
+        false, # vy
+        false, # vz
+        true, # vroll
+        true, # vpitch
+        true, # vyaw
+        true, # ax
+        true, # ay
+        true, # az
+      ]
+    imu0_remove_gravitational_acceleration: true
+    imu0_queue_size: 10
+    imu0_nodelay: false
+    imu0_differential: false
+    imu0_relative: false
+    use_control: false
+    stamped_control: false
+    # imu0_pose_rejection_threshold: 0.8 # Note the difference in parameter names
+    # imu0_twist_rejection_threshold: 0.8
