@@ -5,11 +5,11 @@ project(robots_description)
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY common
+  DIRECTORY common/urdf common/rviz
   DESTINATION share/${PROJECT_NAME}/common
 )
 install(
-  DIRECTORY differential
+  DIRECTORY differential/urdf differential/rviz
   DESTINATION share/${PROJECT_NAME}/diff
 )
 
