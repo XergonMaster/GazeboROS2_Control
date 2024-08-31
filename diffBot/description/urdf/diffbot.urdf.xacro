@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!-- Basic differential drive mobile base -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="diffdrive_robot">
+    <xacro:arg name="prefix" default="" />
+    <xacro:arg name="use_mock_hardware" default="false" />
+
+    <!-- Include the diffbot_description.urdf.xacro -->
+    <xacro:include
+        filename="$(find robots_description)/diff/urdf/diff.description.urdf.xacro" />
+    <!-- Import Rviz colors -->
+    <xacro:include
+        filename="$(find robots_description)/common/urdf/materials.xacro" />
+
+    <xacro:diffbot prefix="$(arg prefix)" />
+
+</robot>
