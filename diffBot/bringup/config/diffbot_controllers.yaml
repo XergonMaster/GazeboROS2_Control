@@ -1,36 +1,16 @@
-# controller_manager:
-#   update_rate: 50 # Frecuencia de actualización del controlador (Hz)
-
-# joint_state_broadcaster:
-#   type: joint_state_broadcaster/JointStateBroadcaster
-
-# diffbot_base_controller:
-#   type: diff_bot_controller/DiffBotController
-#   left_wheel: "left_wheel_joint"
-#   right_wheel: "right_wheel_joint"
-#   publish_rate: 50
-#   cmd_vel_timeout: 0.5
-#   velocity_rolling_window_size: 10
-
 controller_manager:
   ros__parameters:
-    update_rate: 100 # Frecuencia de actualización en Hz
-    controllers:
-      diff_bot_controller:
-        update_rate: 10 # Frecuencia de actualización en Hz
-        # type: "diff_bot_controller::DiffBotController"
+    update_rate: 50 # Frecuencia de actualización del controlador (Hz)
+    use_sim_time: true # Si se está utilizando tiempo simulado
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+    diffbot_base_controller:
+      type: diff_bot_controller/DiffBotController
 
-        type: diff_bot_controller/DiffBotController
-        state_interfaces:
-          - name: left_wheel
-            interface_name: velocity
-          - name: right_wheel
-            interface_name: velocity
-        command_interfaces:
-          - name: left_wheel
-            interface_name: velocity
-          - name: right_wheel
-            interface_name: velocity
-        parameters:
-          left_wheel_name: "left_wheel_joint"
-          right_wheel_name: "right_wheel_joint"
+diffbot_base_controller:
+  ros__parameters:
+    left_wheel: "left_wheel_joint"
+    right_wheel: "right_wheel_joint"
+    publish_rate: 50
+    cmd_vel_timeout: 0.5
+    velocity_rolling_window_size: 10
