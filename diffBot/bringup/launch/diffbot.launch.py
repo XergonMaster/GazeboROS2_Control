@@ -1,3 +1,4 @@
+import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, RegisterEventHandler, IncludeLaunchDescription
 from launch.conditions import IfCondition
@@ -6,32 +7,25 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution, LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
-import os
+
+# Define constants for better readability
+PACKAGE_NAME = "diff_bot"
+ROBOT_DESCRIPTION_PARAM = "robot_description"
+RVIZ_CONFIG_SUBDIR = "rviz"
+URDF_SUBDIR = "urdf"
+CONTROLLERS_CONFIG_SUBDIR = "config"
+RVIZ_FILE = "diffbot.rviz"
+URDF_FILE = "diffbot.urdf.xacro"
+CONTROLLERS_FILE = "diffbot_controllers.yaml"
+GAZEBO_LAUNCH_FILE = "gazebo.launch.py"
 
 def generate_launch_description():
     # Declare arguments
-    declared_arguments = []
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "gui",
-            default_value="true",
-            description="Start RViz2 automatically with this launch file.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "use_mock_hardware",
-            default_value="true",
-            description="Start robot with mock hardware mirroring command to its states.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "spawn_gazebo",
-            default_value="false",
-            description="Whether to spawn the robot in Gazebo.",
-        )
-    )
+    declared_arguments = [
+        DeclareLaunchArgument("gui", default_value="true", description="Start RViz2 automatically with this launch file."),
+        DeclareLaunchArgument("use_mock_hardware", default_value="true", description="Start robot with mock hardware mirroring command to its states."),
+        DeclareLaunchArgument("spawn_gazebo", default_value="false", description="Whether to spawn the robot in Gazebo."),
+    ]
 
     # Initialize Arguments
     gui = LaunchConfiguration("gui")
@@ -39,31 +33,18 @@ def generate_launch_description():
     spawn_gazebo = LaunchConfiguration("spawn_gazebo")
 
     # Get URDF via xacro
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [FindPackageShare("diff_bot"), "urdf", "diffbot.urdf.xacro"]
-            ),
-            " ",
-            "use_mock_hardware:=",
-            use_mock_hardware,
-        ]
-    )
-    robot_description = {"robot_description": robot_description_content}
+    robot_description_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution([FindPackageShare(PACKAGE_NAME), URDF_SUBDIR, URDF_FILE]),
+        " ",
+        "use_mock_hardware:=", use_mock_hardware,
+    ])
+    robot_description = {ROBOT_DESCRIPTION_PARAM: robot_description_content}
 
-    robot_controllers = PathJoinSubstitution(
-        [
-            FindPackageShare("diff_bot"),
-            "config",
-            "diffbot_controllers.yaml",
-        ]
-    )
+    robot_controllers = PathJoinSubstitution([FindPackageShare(PACKAGE_NAME), CONTROLLERS_CONFIG_SUBDIR, CONTROLLERS_FILE])
 
-    rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare("robots_description"), "diff", "rviz", "diffbot.rviz"]
-    )
+    rviz_config_file = PathJoinSubstitution([FindPackageShare("robots_description"), "diff", RVIZ_CONFIG_SUBDIR, RVIZ_FILE])
 
     # Nodes
     control_node = Node(
@@ -72,16 +53,18 @@ def generate_launch_description():
         parameters=[robot_controllers],
         output="both",
         remappings=[
-            ("~/robot_description", "/robot_description"),
+            ("~/" + ROBOT_DESCRIPTION_PARAM, "/" + ROBOT_DESCRIPTION_PARAM),
             ("/diffbot_base_controller/cmd_vel", "/cmd_vel"),
         ],
     )
+
     robot_state_pub_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="both",
         parameters=[robot_description],
     )
+
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
@@ -122,16 +105,14 @@ def generate_launch_description():
     # Gazebo launch
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(
-                FindPackageShare("gazebo_ros").find("gazebo_ros"), "launch", "gazebo.launch.py"
-            )
+            os.path.join(FindPackageShare("gazebo_ros").find("gazebo_ros"), "launch", GAZEBO_LAUNCH_FILE)
         ),
         condition=IfCondition(spawn_gazebo),
     )
 
     spawn_entity = Node(
         package="gazebo_ros", executable="spawn_entity.py",
-        arguments=["-topic", "/robot_description", "-entity", "diffbot"],
+        arguments=["-topic", "/" + ROBOT_DESCRIPTION_PARAM, "-entity", "diffbot"],
         output="screen",
         condition=IfCondition(spawn_gazebo),
     )

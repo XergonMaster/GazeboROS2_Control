@@ -13,14 +13,17 @@
 
     <xacro:diffbot prefix="$(arg prefix)" />
 
+    <xacro:include
+        filename="$(find diff_bot)/ros2_control/diffbot.gzb_control.xacro" />
+
+    <xacro:diffbot_gzb_control prefix="$(arg prefix)" />
 
     <!-- Import diffbot ros2_control description -->
-    <xacro:include
-        filename="$(find diff_bot)/ros2_control/diffbot.ros2_control.xacro" />
+    <!-- <xacro:include
+        filename="$(find diff_bot)/ros2_control/diffbot.ros2_control.xacro" /> -->
 
-
-    <xacro:diffbot_ros2_control
-        name="DiffBot" prefix="$(arg prefix)" use_mock_hardware="$(arg use_mock_hardware)" />
+    <!-- <xacro:diffbot_ros2_control
+        name="DiffBot" prefix="$(arg prefix)" use_mock_hardware="$(arg use_mock_hardware)" /> -->
 
 
 </robot>
